@@ -1,6 +1,7 @@
 import mouse
 import time
 import keyboard
+import json
 
 lastActionTime = 0
 actionsQueue = []
@@ -44,11 +45,14 @@ def printHotkeysSummary():
 
 ESC: Quits the CopyMe
 
-CTRL + Z: Initialize the mouse recording
-CTRL + X: Stops the mouse recording
-CTRL + C: Reproduces the recording
+ALT + Z: Initialize the mouse recording
+ALT + X: Stops the mouse recording
+ALT + C: Reproduces the recording
 
-CTRL + H: Prints this summary
+ALT + V: Saves the current mouse recording
+ALT + B: Loads the saved mouse recording
+
+ALT + H: Prints this summary
 
 NOTE: The keybindings will work till the ESC key be pressed
 '''
@@ -69,11 +73,29 @@ def reproduceMouseRecording():
         mouse.move(x, y, duration=actionTime / 2)
         mouse.click()
 
+def saveMouseRecording():
+    global actionsQueue
+
+    stringfiedQueue = json.dumps(actionsQueue)
+
+    with open("savedActions.txt", "w") as savedActionsFile:
+        savedActionsFile.write(stringfiedQueue)
+
+def loadSavedMouseRecording():
+    global actionsQueue
+
+    with open ("savedActions.txt", "r") as savedActionsFile:
+        stringfiedQueue = savedActionsFile.read()
+
+        actionsQueue = json.loads(stringfiedQueue)
+
 def registerKeyboardHotkeys():
-    keyboard.add_hotkey("ctrl+z", startMouseRecording)
-    keyboard.add_hotkey("ctrl+x", stopMouseRecording)
-    keyboard.add_hotkey("ctrl+c", reproduceMouseRecording)
-    keyboard.add_hotkey("ctrl+h", printHotkeysSummary)
+    keyboard.add_hotkey("alt+z", startMouseRecording)
+    keyboard.add_hotkey("alt+x", stopMouseRecording)
+    keyboard.add_hotkey("alt+c", reproduceMouseRecording)
+    keyboard.add_hotkey("alt+v", saveMouseRecording)
+    keyboard.add_hotkey("alt+b", loadSavedMouseRecording)
+    keyboard.add_hotkey("alt+h", printHotkeysSummary)
     
     keyboard.add_hotkey("esc", quitCopyMe)
     
