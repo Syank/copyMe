@@ -3,9 +3,10 @@ import time
 import keyboard
 import json
 
+
+
 lastActionTime = 0
 actionsQueue = []
-forceStop = False
 
 def registerMousePosition():
     global lastActionTime, actionsQueue
@@ -26,12 +27,6 @@ def registerMousePosition():
     actionsQueue.append(action)
 
 def quitCopyMe():
-    global forceStop
-
-    forceStop = True
-
-    print(forceStop)
-    
     mouse.unhook_all()
     keyboard.unhook_all()
 
@@ -59,6 +54,8 @@ ALT + C: Reproduces the recording
 ALT + V: Saves the current mouse recording
 ALT + B: Loads the saved mouse recording
 
+ALT + Q: While reproducing a record, hold the hotkeys to stops the reproduction
+
 ALT + H: Prints this summary
 
 NOTE: The keybindings will work till the ESC key be pressed
@@ -67,13 +64,13 @@ NOTE: The keybindings will work till the ESC key be pressed
     print(summaryMessage)
 
 def reproduceMouseRecording():
-    global actionsQueue, forceStop
+    global actionsQueue
 
     for action in actionsQueue:
-        if forceStop:
+        needToStop = keyboard.is_pressed("alt+q")
+        
+        if needToStop:
             break
-
-        print(forceStop)
         
         x = action["x"]
         y = action["y"]
@@ -108,7 +105,7 @@ def registerKeyboardHotkeys():
     keyboard.add_hotkey("alt+h", printHotkeysSummary)
     
     keyboard.add_hotkey("esc", quitCopyMe)
-    
+
 def initializeCopyMe():
     printHotkeysSummary()
     
